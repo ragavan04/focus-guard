@@ -1,0 +1,6 @@
+/* Import the CSS files */
+@import url("../styles/base.css");
+@import url("../styles/light-theme.css");
+@import url("../styles/dark-theme.css");
+
+/* All styles moved to separate theme files for better organization */
