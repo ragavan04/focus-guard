@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS = {
   longBreak: 15 * 60, // 15 minutes
   faceTrackingEnabled: true, // Enable face tracking by default
   backgroundSelection: "background1", // Default background
+  soundEnabled: true, // Enable sound notifications by default
 };
 
 // Load settings from localStorage

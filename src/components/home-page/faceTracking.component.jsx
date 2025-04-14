@@ -5,7 +5,12 @@ import * as cam from "@mediapipe/camera_utils";
 import * as drawingUtils from "@mediapipe/drawing_utils";
 import "../../styles/faceTracking.css";
 
-const FaceTracking = ({ isRunning, currentTimer, onAttentionChange }) => {
+const FaceTracking = ({
+  isRunning,
+  currentTimer,
+  onAttentionChange,
+  soundEnabled,
+}) => {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
@@ -41,17 +46,20 @@ const FaceTracking = ({ isRunning, currentTimer, onAttentionChange }) => {
   const alertSound = useRef(new Audio("/sounds/attention-alert.mp3"));
 
   const playAlertSound = useCallback(() => {
-    try {
-      if (alertSound.current) {
-        alertSound.current.currentTime = 0;
-        alertSound.current.play().catch((err) => {
-          console.log("Audio play error, possibly file not found:", err);
-        });
+    // Only play sound if enabled in settings
+    if (soundEnabled !== false) {
+      try {
+        if (alertSound.current) {
+          alertSound.current.currentTime = 0;
+          alertSound.current.play().catch((err) => {
+            console.log("Audio play error, possibly file not found:", err);
+          });
+        }
+      } catch (err) {
+        console.log("Error playing alert sound:", err);
       }
-    } catch (err) {
-      console.log("Error playing alert sound:", err);
     }
-  }, []);
+  }, [soundEnabled]);
 
   const showNotification = useCallback(
     (message) => {

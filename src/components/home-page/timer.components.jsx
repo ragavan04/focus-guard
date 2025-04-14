@@ -23,6 +23,7 @@ const Timer = ({ onModeChange }) => {
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
     faceTrackingEnabled: true,
+    soundEnabled: true,
   });
 
   const [timeLeft, setTimeLeft] = useState(timerSettings.focus);
@@ -40,12 +41,24 @@ const Timer = ({ onModeChange }) => {
   const initialTimeRef = useRef(null);
   // Reference for the menu dropdown
   const menuRef = useRef(null);
+  // Sound effect for timer completion
+  const timerCompleteSound = useRef(new Audio("/sounds/notification.mp3"));
 
   // Load settings from localStorage on mount
   useEffect(() => {
     const loadedSettings = settingsService.loadSettings();
     setTimerSettings(loadedSettings);
     setTimeLeft(loadedSettings.focus);
+  }, []);
+
+  // Request notification permission
+  useEffect(() => {
+    if (
+      Notification.permission !== "granted" &&
+      Notification.permission !== "denied"
+    ) {
+      Notification.requestPermission();
+    }
   }, []);
 
   // Close menu when clicking outside
@@ -256,6 +269,28 @@ const Timer = ({ onModeChange }) => {
     if (timeLeft === 0) {
       setIsRunning(false);
       setIsPausedByAttention(false);
+
+      // Play timer completion sound if enabled in settings
+      if (timerSettings.soundEnabled) {
+        try {
+          timerCompleteSound.current.currentTime = 0;
+          timerCompleteSound.current.play().catch((err) => {
+            console.log("Error playing timer complete sound:", err);
+          });
+        } catch (err) {
+          console.log("Error with audio playback:", err);
+        }
+      }
+
+      // Show browser notification if permission is granted
+      if (Notification.permission === "granted") {
+        new Notification("Focus Guard", {
+          body: `${
+            currentTimer.charAt(0).toUpperCase() + currentTimer.slice(1)
+          } timer complete!`,
+          icon: "/logo192.png",
+        });
+      }
 
       // If it was a focus timer, mark it as completed
       if (currentTimer === "focus" && currentSessionRef.current) {
@@ -541,6 +576,7 @@ const Timer = ({ onModeChange }) => {
           isRunning={isRunning}
           currentTimer={currentTimer}
           onAttentionChange={handleAttentionChange}
+          soundEnabled={timerSettings.soundEnabled}
         />
       )}
     </div>

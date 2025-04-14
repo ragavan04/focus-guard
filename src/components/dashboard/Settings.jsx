@@ -13,6 +13,7 @@ const Settings = () => {
     shortBreak: 5,
     longBreak: 15,
     faceTrackingEnabled: true,
+    soundEnabled: true,
   });
 
   // Load settings on component mount
@@ -26,6 +27,10 @@ const Settings = () => {
       faceTrackingEnabled:
         loadedSettings.faceTrackingEnabled !== undefined
           ? loadedSettings.faceTrackingEnabled
+          : true,
+      soundEnabled:
+        loadedSettings.soundEnabled !== undefined
+          ? loadedSettings.soundEnabled
           : true,
     });
   }, []);
@@ -58,6 +63,7 @@ const Settings = () => {
       shortBreak: settings.shortBreak * 60,
       longBreak: settings.longBreak * 60,
       faceTrackingEnabled: settings.faceTrackingEnabled,
+      soundEnabled: settings.soundEnabled,
     };
 
     if (settingsService.saveSettings(updatedSettings)) {
@@ -77,6 +83,7 @@ const Settings = () => {
         shortBreak: secondsToMinutes(defaults.shortBreak),
         longBreak: secondsToMinutes(defaults.longBreak),
         faceTrackingEnabled: defaults.faceTrackingEnabled,
+        soundEnabled: defaults.soundEnabled,
       });
       alert("Settings reset to defaults.");
     }
@@ -151,6 +158,31 @@ const Settings = () => {
               <br />
               <strong>Note:</strong> When disabled, only basic stats (completed
               sessions and streaks) will be tracked.
+            </p>
+          </div>
+        </div>
+
+        <div className="setting-section">
+          <h3>Notifications</h3>
+
+          <div className="setting-group toggle-setting">
+            <div className="toggle-container">
+              <label htmlFor="soundEnabled" className="toggle-label">
+                <input
+                  type="checkbox"
+                  id="soundEnabled"
+                  name="soundEnabled"
+                  checked={settings.soundEnabled}
+                  onChange={handleToggleChange}
+                />
+                <span className="toggle-switch"></span>
+                <span className="toggle-text">Enable Sound Notifications</span>
+              </label>
+            </div>
+            <p className="setting-description">
+              When enabled, the app will play sound notifications when timers
+              complete and when attention tracking detects that you've looked
+              away from the screen.
             </p>
           </div>
         </div>
