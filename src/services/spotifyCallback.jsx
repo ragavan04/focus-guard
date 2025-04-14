@@ -13,9 +13,6 @@ const SpotifyCallback = () => {
     if (code && codeVerifier && !hasExchanged.current) {
       hasExchanged.current = true; // ✅ Only run once
 
-      console.log("Code:", code);
-      console.log("Code Verifier:", codeVerifier);
-
       fetch("/api/spotify/exchange-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,7 +29,6 @@ const SpotifyCallback = () => {
 
             navigate("/"); // ✅ Redirect after success
           } else {
-            console.error("Token exchange failed", data);
           }
         })
         .catch((err) => console.error("API error", err));

@@ -28,13 +28,13 @@ import {
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBrYq49NmLJDlqhjXccsrqGPTYqSQs4dDY",
-  authDomain: "focus-guard-b33b4.firebaseapp.com",
-  projectId: "focus-guard-b33b4",
-  storageBucket: "focus-guard-b33b4.firebasestorage.app",
-  messagingSenderId: "608663578461",
-  appId: "1:608663578461:web:f30ff9f9db0afbe9802ab4",
-  measurementId: "G-L8SJYTK4Q1",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 const firebaseApp = initializeApp(firebaseConfig);

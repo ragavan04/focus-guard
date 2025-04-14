@@ -52,13 +52,7 @@ const Stats = () => {
       setError(null);
 
       try {
-        console.log(
-          `Loading stats for time range: ${timeRange}, user: ${
-            currentUser?.uid || "none"
-          }`
-        );
         const loadedStats = await statsService.getStatsByTimeRange(timeRange);
-        console.log("Stats loaded:", loadedStats);
         setStats(loadedStats);
       } catch (error) {
         console.error("Error loading stats:", error);
@@ -93,14 +87,10 @@ const Stats = () => {
       try {
         setIsLoading(true);
         setError(null);
-        console.log("Resetting stats");
         const result = await statsService.resetStats();
-        console.log("Reset stats result:", result);
 
         // Reload stats
-        console.log("Reloading stats after reset");
         const loadedStats = await statsService.getStatsByTimeRange(timeRange);
-        console.log("Stats reloaded:", loadedStats);
         setStats(loadedStats);
       } catch (error) {
         console.error("Error resetting stats:", error);

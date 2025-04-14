@@ -38,15 +38,12 @@ const SignUpForm = ({ toggleView, onSignUpSuccess }) => {
     }
 
     try {
-      console.log("Attempting to create user with email:", email);
       const userCredential = await createAuthUserWithEmailAndPassword(
         email,
         password
       );
 
-      console.log("User created successfully:", userCredential.user.uid);
       await createUserDocumentFromAuth(userCredential.user, { displayName });
-      console.log("User document created with display name:", displayName);
 
       resetFormFields();
 
@@ -85,7 +82,6 @@ const SignUpForm = ({ toggleView, onSignUpSuccess }) => {
     try {
       console.log("Attempting Google sign-up");
       const result = await signInWithGooglePopup();
-      console.log("Google sign-up successful, user:", result.user.uid);
 
       // Small delay to ensure auth state is updated before navigation
       setTimeout(() => {

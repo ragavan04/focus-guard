@@ -163,10 +163,6 @@ const completeSession = async (sessionId, duration) => {
       return false;
     }
 
-    console.log(
-      `Completing session ${sessionId} for user ${userId} with duration ${duration}s`
-    );
-
     // Get current stats
     const statsDocRef = getStatsDocRef(userId);
     const statsDocSnap = await getDoc(statsDocRef);
@@ -186,7 +182,6 @@ const completeSession = async (sessionId, duration) => {
     const sessionIndex = stats.sessions.findIndex((s) => s.id === sessionId);
 
     if (sessionIndex !== -1) {
-      console.log("Found session to complete at index:", sessionIndex);
       stats.sessions[sessionIndex].completed = true;
       stats.sessions[sessionIndex].duration = duration;
 

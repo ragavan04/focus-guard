@@ -22,19 +22,12 @@ const SignIn = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Check if user is already authenticated
-    console.log(
-      "SignIn component - Current user state:",
-      currentUser ? "Logged in" : "Not logged in"
-    );
-
     // Reset error message when toggling between sign-in and sign-up
     setErrorMessage("");
   }, [currentUser, showSignUp]);
 
   // If user is logged in, show profile
   if (currentUser) {
-    console.log("User is authenticated, showing profile");
     return <UserProfile />;
   }
 
@@ -54,9 +47,7 @@ const SignIn = () => {
     setErrorMessage("");
 
     try {
-      console.log("Attempting to sign in with email:", email);
       const userCredential = await signInWithEmailAndPassword(email, password);
-      console.log("Sign-in successful, user:", userCredential.user.uid);
       resetFormFields();
 
       // Small delay to ensure auth state is updated before navigation
@@ -89,9 +80,7 @@ const SignIn = () => {
     setErrorMessage("");
 
     try {
-      console.log("Attempting Google sign-in");
       const result = await signInWithGooglePopup();
-      console.log("Google sign-in successful, user:", result.user.uid);
 
       // Small delay to ensure auth state is updated before navigation
       setTimeout(() => {
