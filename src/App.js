@@ -12,6 +12,7 @@ import Friends from "./components/dashboard/Friends";
 import SpotifyCallback from "./services/spotifyCallback";
 import { DarkModeProvider } from "./contexts/darkMode.context";
 import { BackgroundProvider } from "./contexts/BackgroundContext";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   const [currentMode, setCurrentMode] = useState("focus");
@@ -22,26 +23,29 @@ function App() {
   };
 
   return (
-    <DarkModeProvider>
-      <BackgroundProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Layout currentMode={currentMode} />}>
-              <Route
-                index
-                element={<Timer onModeChange={handleModeChange} />}
-              />
-              <Route path="/stats" element={<Stats />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/sign-in" element={<SignIn />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/friends" element={<Friends />} />
-              <Route path="/callback" element={<SpotifyCallback />} />
-            </Route>
-          </Routes>
-        </Router>
-      </BackgroundProvider>
-    </DarkModeProvider>
+    <>
+      <DarkModeProvider>
+        <BackgroundProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Layout currentMode={currentMode} />}>
+                <Route
+                  index
+                  element={<Timer onModeChange={handleModeChange} />}
+                />
+                <Route path="/stats" element={<Stats />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/sign-in" element={<SignIn />} />
+                <Route path="/profile" element={<UserProfile />} />
+                <Route path="/friends" element={<Friends />} />
+                <Route path="/callback" element={<SpotifyCallback />} />
+              </Route>
+            </Routes>
+          </Router>
+        </BackgroundProvider>
+      </DarkModeProvider>
+      <Analytics />
+    </>
   );
 }
 
