@@ -7,14 +7,9 @@ export default async function handler(req, res) {
 
   const { code, codeVerifier } = req.body;
 
-  const clientId = process.env.SPOTIFY_CLIENT_ID;
-  const redirectUri =
-    process.env.SPOTIFY_REDIRECT_URI ||
-    `${
-      process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000"
-    }/callback`;
+  const clientId = "7f10b028ac7543d8af89eda124704d3f";
+  const redirectUri = "https://focus-guard.vercel.app/callback";
+
   const response = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },

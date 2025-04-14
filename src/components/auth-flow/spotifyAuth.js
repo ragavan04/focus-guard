@@ -29,14 +29,8 @@ export async function generateCodeChallenge(codeVerifier) {
 
 // Redirect user to Spotify auth
 export async function redirectToSpotifyLogin() {
-  const clientId = process.env.SPOTIFY_CLIENT_ID;
-  const redirectUri =
-    process.env.SPOTIFY_REDIRECT_URI ||
-    `${
-      process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000"
-    }/callback`;
+  const clientId = "7f10b028ac7543d8af89eda124704d3f";
+  const redirectUri = "https://focus-guard.vercel.app/callback";
 
   const codeVerifier = generateRandomString(64);
   const codeChallenge = await generateCodeChallenge(codeVerifier);
