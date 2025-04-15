@@ -350,13 +350,12 @@ const Timer = ({ onModeChange }) => {
 
   // Create memoized star elements to prevent re-rendering
   const starElements = useMemo(() => {
-    // Regular stars
-    const regularStars = [...Array(300)].map((_, i) => (
+    const regularStars = [...Array(50)].map((_, i) => (
       <div
         key={i}
         className={`star star-${Math.floor(Math.random() * 3) + 1}`}
         style={{
-          top: `${Math.random() * 60}%`,
+          top: `${Math.random() * 40}%`,
           left: `${Math.random() * 100}%`,
           animationDelay: `${Math.random() * 5}s`,
         }}
@@ -365,14 +364,11 @@ const Timer = ({ onModeChange }) => {
 
     // Special larger stars with fixed positions
     const specialStars = [
-      { top: "8%", left: "15%", delay: "0.5s" },
-      { top: "12%", left: "75%", delay: "1.5s" },
-      { top: "25%", left: "42%", delay: "2.5s" },
-      { top: "18%", left: "85%", delay: "3.5s" },
-      { top: "5%", left: "55%", delay: "4.5s" },
-      { top: "40%", left: "25%", delay: "2.3s" },
+      { top: "15%", left: "15%", delay: "0.5s" },
+      { top: "25%", left: "75%", delay: "1.5s" },
+      { top: "45%", left: "42%", delay: "2.5s" },
+      { top: "65%", left: "55%", delay: "4.5s" },
       { top: "35%", left: "65%", delay: "3.7s" },
-      { top: "50%", left: "80%", delay: "1.8s" },
     ].map((pos, i) => (
       <div
         key={`special-${i}`}
@@ -386,7 +382,7 @@ const Timer = ({ onModeChange }) => {
     ));
 
     return [...regularStars, ...specialStars];
-  }, []); // Empty dependency array means this will only be calculated once
+  }, []);
 
   return (
     <div className={`timer ${currentTimer} ${darkMode ? "dark-mode" : ""}`}>
@@ -396,11 +392,6 @@ const Timer = ({ onModeChange }) => {
           <div className="bird"></div>
           <div className="bird"></div>
           <div className="bird"></div>
-          <div className="bird"></div>
-          <div className="bird"></div>
-          <div className="bird dark"></div>
-          <div className="bird dark"></div>
-          <div className="bird dark"></div>
         </div>
       )}
 
@@ -418,14 +409,6 @@ const Timer = ({ onModeChange }) => {
           <div className="noise-overlay"></div>
           <div className="aurora"></div>
           <div className="horizon-glow"></div>
-
-          {/* Night clouds/fog elements */}
-          <div className="night-clouds-container">
-            <div className="night-cloud night-cloud-1"></div>
-            <div className="night-cloud night-cloud-2"></div>
-            <div className="night-cloud night-cloud-3"></div>
-            <div className="night-mist"></div>
-          </div>
         </>
       )}
 
@@ -441,10 +424,6 @@ const Timer = ({ onModeChange }) => {
             <div className="cloud cloud-1"></div>
             <div className="cloud cloud-2"></div>
             <div className="cloud cloud-3"></div>
-            <div className="cloud cloud-4"></div>
-            <div className="cloud cloud-5"></div>
-            <div className="cloud cloud-6"></div>
-            <div className="fog-layer"></div>
           </div>
         </>
       )}

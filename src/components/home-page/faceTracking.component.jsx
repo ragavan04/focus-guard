@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Webcam from "react-webcam";
-import * as faceMesh from "@mediapipe/face_mesh";
+// import * as faceMesh from "@mediapipe/face_mesh"; // Remove FaceMesh import
+import * as faceDetection from "@mediapipe/face_detection"; // Add FaceDetection import
 import * as cam from "@mediapipe/camera_utils";
 import * as drawingUtils from "@mediapipe/drawing_utils";
 import "../../styles/faceTracking.css";
@@ -14,7 +15,8 @@ const FaceTracking = ({
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const cameraRef = useRef(null);
-  const faceMeshRef = useRef(null);
+  // const faceMeshRef = useRef(null); // Remove FaceMesh ref
+  const faceDetectionRef = useRef(null); // Add FaceDetection ref
   const [isAttentionOn, setIsAttentionOn] = useState(true);
   const [lastAttentionState, setLastAttentionState] = useState(true);
   const [faceDetected, setFaceDetected] = useState(false);
@@ -86,106 +88,126 @@ const FaceTracking = ({
     }
   }, []);
 
-  const onResults = useCallback((results) => {
-    if (
-      !canvasRef.current ||
-      !webcamRef.current?.video ||
-      !webcamRef.current.video.videoWidth ||
-      !webcamRef.current.video.videoHeight
-    )
-      return;
+  const onResults = useCallback(
+    (results) => {
+      if (
+        !canvasRef.current ||
+        !webcamRef.current?.video ||
+        !webcamRef.current.video.videoWidth ||
+        !webcamRef.current.video.videoHeight
+      )
+        return;
 
-    const videoWidth = webcamRef.current.video.videoWidth;
-    const videoHeight = webcamRef.current.video.videoHeight;
+      const videoWidth = webcamRef.current.video.videoWidth;
+      const videoHeight = webcamRef.current.video.videoHeight;
 
-    // Set canvas width and height
-    canvasRef.current.width = videoWidth;
-    canvasRef.current.height = videoHeight;
+      // Set canvas width and height
+      canvasRef.current.width = videoWidth;
+      canvasRef.current.height = videoHeight;
 
-    const canvasCtx = canvasRef.current.getContext("2d");
-    canvasCtx.save();
-    canvasCtx.clearRect(0, 0, videoWidth, videoHeight);
+      const canvasCtx = canvasRef.current.getContext("2d");
+      canvasCtx.save();
+      canvasCtx.clearRect(0, 0, videoWidth, videoHeight);
 
-    // Mirror the canvas to match the mirrored webcam
-    canvasCtx.scale(-1, 1);
-    canvasCtx.translate(-videoWidth, 0);
+      // Mirror the canvas to match the mirrored webcam
+      canvasCtx.scale(-1, 1);
+      canvasCtx.translate(-videoWidth, 0);
 
-    // Check if faces were detected
-    if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-      setFaceDetected(true);
-      setMultipleFaces(results.multiFaceLandmarks.length > 1);
+      // Check if faces were detected by BlazeFace
+      if (results.detections && results.detections.length > 0) {
+        setFaceDetected(true);
+        setMultipleFaces(results.detections.length > 1);
 
-      // Draw face mesh
-      for (const landmarks of results.multiFaceLandmarks) {
-        drawingUtils.drawConnectors(
+        // Use the first detection for attention tracking
+        const detection = results.detections[0];
+
+        // Draw bounding box
+        drawingUtils.drawRectangle(
           canvasCtx,
-          landmarks,
-          faceMesh.FACEMESH_TESSELATION,
-          { color: "#C0C0C070", lineWidth: 1 }
+          detection.boundingBox,
+          { color: "black", lineWidth: 2, fillColor: "#00000000" } // Black bounding box
         );
 
-        // Eye landmarks
+        // Define connections for the 6 BlazeFace landmarks
+        // 0: Right Eye, 1: Left Eye, 2: Nose, 3: Mouth, 4: Right Ear, 5: Left Ear
+        const blazeFaceConnections = [
+          [0, 1], // Right Eye to Left Eye
+          [0, 2], // Right Eye to Nose
+          [1, 2], // Left Eye to Nose
+          [2, 3], // Nose to Mouth
+          [0, 4], // Right Eye to Right Ear
+          [1, 5], // Left Eye to Left Ear
+          // Optional: Add connections for a basic jawline if desired
+          // [4, 3], // Right Ear to Mouth
+          // [5, 3], // Left Ear to Mouth
+        ];
+
+        // Draw landmarks (dots)
+        drawingUtils.drawLandmarks(canvasCtx, detection.landmarks, {
+          color: "#30FF30", // Green dots
+          radius: 3, // Adjust size as needed
+        });
+
+        // Draw connectors (lines)
         drawingUtils.drawConnectors(
           canvasCtx,
-          landmarks,
-          faceMesh.FACEMESH_RIGHT_EYE,
-          { color: "#FF3030", lineWidth: 2 }
-        );
-        drawingUtils.drawConnectors(
-          canvasCtx,
-          landmarks,
-          faceMesh.FACEMESH_LEFT_EYE,
-          { color: "#30FF30", lineWidth: 2 }
+          detection.landmarks,
+          blazeFaceConnections,
+          {
+            color: "#FFFFFF", // White lines
+            lineWidth: 1,
+          }
         );
 
-        // Analyze eye direction and head pose to determine attention
-        // We'll use simplified logic based on face landmarks
+        // Analyze face position using nose landmark (index 2 in BlazeFace landmarks)
+        // Landmarks: 0: right eye, 1: left eye, 2: nose, 3: mouth, 4: right ear, 5: left ear
+        const nose = detection.landmarks[2];
+        // No need for left/right eye for this simplified logic
+        // const leftEye = detection.landmarks[1];
+        // const rightEye = detection.landmarks[0];
 
-        // Get face orientation from nose and eye positions
-        const nose = landmarks[1];
-        const leftEye = landmarks[159];
-        const rightEye = landmarks[386];
+        if (nose) {
+          // Use normalized coordinates (0.0 to 1.0)
+          const lookingHorizontally =
+            Math.abs(nose.x - 0.5) < horizontalThresholdRef.current;
+          const lookingVertically = // Simplified tilt detection based on nose vertical position
+            Math.abs(nose.y - 0.5) < tiltThresholdRef.current; // Compare nose y to vertical center
 
-        // Use the refs for threshold values to avoid component re-renders
-        const faceForward =
-          Math.abs(nose.z - (leftEye.z + rightEye.z) / 2) <
-            tiltThresholdRef.current &&
-          Math.abs(nose.x - 0.5) < horizontalThresholdRef.current;
-
-        // For attention detection, only consider face direction, not eye openness
-        // This allows natural blinking without losing attention tracking
-        const isAttentive = faceForward;
-
-        setIsAttentionOn(isAttentive);
+          const isAttentive = lookingHorizontally && lookingVertically;
+          setIsAttentionOn(isAttentive);
+        } else {
+          // If landmarks aren't available for some reason, assume not attentive
+          setIsAttentionOn(false);
+        }
+      } else {
+        setFaceDetected(false);
+        setMultipleFaces(false);
+        setIsAttentionOn(false);
       }
-    } else {
-      setFaceDetected(false);
-      setMultipleFaces(false);
-      setIsAttentionOn(false);
-    }
 
-    canvasCtx.restore();
-  }, []);
+      canvasCtx.restore();
+    },
+    [] // Remove dependencies on threshold refs here, they are accessed directly inside
+  );
 
-  // Initialize FaceMesh
+  // Initialize FaceDetection (BlazeFace)
   useEffect(() => {
-    // Always create a new FaceMesh instance when needed
-    faceMeshRef.current = new faceMesh.FaceMesh({
+    // Always create a new FaceDetection instance when needed
+    faceDetectionRef.current = new faceDetection.FaceDetection({
       locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+        // Use the face_detection model files
+        return `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`;
       },
     });
 
-    faceMeshRef.current.setOptions({
-      maxNumFaces: 1,
-      refineLandmarks: true,
+    faceDetectionRef.current.setOptions({
+      model: "short", // Use the short-range model
       minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5,
     });
 
-    faceMeshRef.current.onResults(onResults);
+    faceDetectionRef.current.onResults(onResults);
 
-    // Only clean up camera when component unmounts
+    // Cleanup camera when component unmounts
     return () => {
       if (cameraRef.current) {
         cameraRef.current.stop();
@@ -205,11 +227,12 @@ const FaceTracking = ({
       return;
     }
 
-    // Don't proceed if video or FaceMesh isn't ready
+    // Don't proceed if video or FaceDetection isn't ready
     if (
       !webcamRef.current ||
       !webcamRef.current.video ||
-      !faceMeshRef.current
+      // !faceMeshRef.current // Check FaceDetection ref instead
+      !faceDetectionRef.current
     ) {
       return;
     }
@@ -240,14 +263,17 @@ const FaceTracking = ({
             webcamRef.current &&
             webcamRef.current.video &&
             webcamRef.current.video.readyState === 4 &&
-            faceMeshRef.current
+            // faceMeshRef.current // Check FaceDetection ref instead
+            faceDetectionRef.current
           ) {
             try {
-              await faceMeshRef.current.send({
+              await faceDetectionRef.current.send({
+                // Send to FaceDetection
                 image: webcamRef.current.video,
               });
             } catch (err) {
-              console.error("FaceMesh send error:", err);
+              // console.error("FaceMesh send error:", err); // Update error message source
+              console.error("FaceDetection send error:", err);
             }
           }
         },
