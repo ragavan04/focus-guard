@@ -5,7 +5,10 @@ A smart productivity tool that helps you maintain focus during work or study ses
 View the offical site at: https://focus-guard.vercel.app/
 
 
-https://user-images.githubusercontent.com/<...>/FocusGuard-DemoVideo.mp4
+### Live Demo
+
+https://raw.githubusercontent.com/ragavan04/focus-guard/main/assets/FocusGuard-DemoVideo.mp4
+
 
 
 ## Features
