@@ -4,11 +4,7 @@ A smart productivity tool that helps you maintain focus during work or study ses
 
 View the offical site at: https://focus-guard.vercel.app/
 
-
-### Live Demo
-
-https://raw.githubusercontent.com/ragavan04/focus-guard/main/assets/FocusGuard-DemoVideo.mp4
-
+View the video demo at: https://drive.google.com/file/d/1c0yeAWIYxR4aRcRUp4q9_RU9-22MqsW7/view?usp=sharing
 
 
 ## Features
