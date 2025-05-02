@@ -2,6 +2,15 @@
 
 A smart productivity tool that helps you maintain focus during work or study sessions using face tracking technology.
 
+View the offical site at: https://focus-guard.vercel.app/
+
+
+### Live Demo
+
+https://raw.githubusercontent.com/ragavan04/focus-guard/main/assets/FocusGuard-DemoVideo.mp4
+
+
+
 ## Features
 
 ### Core Features
