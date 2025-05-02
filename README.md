@@ -2,6 +2,9 @@
 
 A smart productivity tool that helps you maintain focus during work or study sessions using face tracking technology.
 
+View the offical site at: https://focus-guard.vercel.app/
+
+
 ## Features
 
 ### Core Features
